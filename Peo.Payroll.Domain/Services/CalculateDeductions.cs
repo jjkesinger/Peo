@@ -2,7 +2,7 @@
 
 namespace Peo.Payroll.Domain.Services
 {
-    public interface ICalculateDeduction
+    public interface ICalculateDeductions
     {
         Task<Deduction[]> CalculateAsync(EmployeePayroll payroll);
     }

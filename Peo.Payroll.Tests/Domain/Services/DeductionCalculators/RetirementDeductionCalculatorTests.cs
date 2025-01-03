@@ -23,7 +23,7 @@ public class RetirementDeductionCalculatorTests
     public async Task CalculateAsync_GivenEmployeeEnrolledInRetirement_ShouldCalculateAmount()
     {
         var payroll = new EmployeePayrollBuilder().WithDefaultPayroll().Build();
-        await payroll.CalculatePay(new PayCalculatorFactoryMock());
+        TestUtilities.SetPrivateProperty(payroll, nameof(EmployeePayroll.GrossPay), 4000m);
 
         A.CallTo(() => _employeeElectionLookupService
             .GetActiveElections(payroll, ElectionType.Retirement))
@@ -47,7 +47,7 @@ public class RetirementDeductionCalculatorTests
     public async Task CalculateAsync_GivenEmployeeNotEnrolledInRetirement_ShouldCalculateZero()
     {
         var payroll = new EmployeePayrollBuilder().WithDefaultPayroll().Build();
-        await payroll.CalculatePay(new PayCalculatorFactoryMock());
+        TestUtilities.SetPrivateProperty(payroll, nameof(EmployeePayroll.GrossPay), 4000m);
 
         A.CallTo(() => _employeeContributionLookupService
             .GetEmployeeContributionsAsync(payroll, ElectionType.Retirement))
@@ -67,7 +67,7 @@ public class RetirementDeductionCalculatorTests
     public async Task CalculateAsync_GivenEmployeeEnrolledInRetirementWith0Rate_ShouldCalculateZero()
     {
         var payroll = new EmployeePayrollBuilder().WithDefaultPayroll().Build();
-        await payroll.CalculatePay(new PayCalculatorFactoryMock());
+        TestUtilities.SetPrivateProperty(payroll, nameof(EmployeePayroll.GrossPay), 4000m);
 
         A.CallTo(() => _employeeElectionLookupService
             .GetActiveElections(payroll, ElectionType.Retirement))
@@ -91,7 +91,7 @@ public class RetirementDeductionCalculatorTests
     public async Task CalculateAsync_GivenEmployeeEnrolledInRetirementWithFixedAmount_ShouldCalculateAmount()
     {
         var payroll = new EmployeePayrollBuilder().WithDefaultPayroll().Build();
-        await payroll.CalculatePay(new PayCalculatorFactoryMock());
+        TestUtilities.SetPrivateProperty(payroll, nameof(EmployeePayroll.GrossPay), 4000m);
 
         A.CallTo(() => _employeeElectionLookupService
             .GetActiveElections(payroll, ElectionType.Retirement))

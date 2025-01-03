@@ -1,13 +1,14 @@
 ﻿using Peo.Payroll.Domain.Services;
 using Peo.Payroll.Domain.Services.PayCalculators;
+using System.Collections.Immutable;
 
 namespace Peo.Payroll.Domain.Model
 {
     public record EmployeePayroll(Company Company, Employee Employee, PayPeriod Period, TimeSheet? Timesheet = null)
     {
-        public Withholding[] Withholdings { get; private set; } = [];
-        public Payment[] Payments { get; private set; } = [];
-        public Deduction[] Deductions { get; private set; } = [];
+        public ImmutableArray<Withholding> Withholdings { get; private set; } = [];
+        public ImmutableArray<Payment> Payments { get; private set; } = [];
+        public ImmutableArray<Deduction> Deductions { get; private set; } = [];
 
         public decimal GrossPay { get; private set; } = decimal.Zero;
         public decimal TaxablePay { get; private set; } = decimal.Zero;
@@ -19,28 +20,28 @@ namespace Peo.Payroll.Domain.Model
         public decimal YtdNetPay { get; private set; } = decimal.Zero;
         public decimal YtdPto { get; private set; } = decimal.Zero;
 
-        public async Task Calculate(
+        public async Task CalculateAsync(
             ICalculatePayFactory payFactory,
             IEnumerable<ICalculatePayments> calculatePayments,
-            IEnumerable<ICalculateDeduction> calculateDeductions,
-            IEnumerable<ICalculateWithholding> calculateWithholdings)
+            IEnumerable<ICalculateDeductions> calculateDeductions,
+            IEnumerable<ICalculateWithholdings> calculateWithholdings)
         {
-            YtdGrossPay = await payFactory.GetPayCalculator(CalculatePayType.YtdGross).CalculateAsync(this);
-            YtdTaxablePay = await payFactory.GetPayCalculator(CalculatePayType.YtdTaxable).CalculateAsync(this);
-            YtdNetPay = await payFactory.GetPayCalculator(CalculatePayType.YtdNet).CalculateAsync(this);
-            YtdPto = await payFactory.GetPayCalculator(CalculatePayType.YtdPto).CalculateAsync(this);
+            YtdGrossPay = await payFactory.GetPayCalculator(CalculatePayType.YtdGross).CalculateAsync(this).ConfigureAwait(false);
+            YtdTaxablePay = await payFactory.GetPayCalculator(CalculatePayType.YtdTaxable).CalculateAsync(this).ConfigureAwait(false);
+            YtdNetPay = await payFactory.GetPayCalculator(CalculatePayType.YtdNet).CalculateAsync(this).ConfigureAwait(false);
+            YtdPto = await payFactory.GetPayCalculator(CalculatePayType.YtdPto).CalculateAsync(this).ConfigureAwait(false);
 
-            await CalculatePayments(calculatePayments);
-            GrossPay = await payFactory.GetPayCalculator(CalculatePayType.Gross).CalculateAsync(this);
-            
-            await CalculateDeductions(calculateDeductions);
+            await CalculatePaymentsAsync(calculatePayments).ConfigureAwait(false);
+            GrossPay = await payFactory.GetPayCalculator(CalculatePayType.Gross).CalculateAsync(this).ConfigureAwait(false);
 
-            TaxablePay = await payFactory.GetPayCalculator(CalculatePayType.Taxable).CalculateAsync(this);
-            await CalculateWithholdings(calculateWithholdings);
-            
-            NetPay = await payFactory.GetPayCalculator(CalculatePayType.Net).CalculateAsync(this);
+            await CalculateDeductionsAsync(calculateDeductions).ConfigureAwait(false);
 
-            Pto = await payFactory.GetPayCalculator(CalculatePayType.Pto).CalculateAsync(this);
+            TaxablePay = await payFactory.GetPayCalculator(CalculatePayType.Taxable).CalculateAsync(this).ConfigureAwait(false);
+            await CalculateWithholdingsAsync(calculateWithholdings).ConfigureAwait(false);
+
+            NetPay = await payFactory.GetPayCalculator(CalculatePayType.Net).CalculateAsync(this).ConfigureAwait(false);
+
+            Pto = await payFactory.GetPayCalculator(CalculatePayType.Pto).CalculateAsync(this).ConfigureAwait(false);
 
             YtdGrossPay += GrossPay;
             YtdTaxablePay += TaxablePay;
@@ -48,24 +49,19 @@ namespace Peo.Payroll.Domain.Model
             YtdPto += Pto;
         }
 
-        private async Task CalculatePayments(IEnumerable<ICalculatePayments> calculatePayments)
+        private async Task CalculatePaymentsAsync(IEnumerable<ICalculatePayments> calculatePayments)
         {
-            Payments = (await calculatePayments.SelectAsync(async f => await f.CalculateAsync(this))).SelectMany(f => f).ToArray();
+            Payments = (await Task.WhenAll(calculatePayments.Select(async f => await f.CalculateAsync(this).ConfigureAwait(false)))).SelectMany(f => f).ToImmutableArray();
         }
 
-        private async Task CalculateDeductions(IEnumerable<ICalculateDeduction> calculateDeductions)
+        private async Task CalculateDeductionsAsync(IEnumerable<ICalculateDeductions> calculateDeductions)
         {
-            Deductions = (await calculateDeductions.SelectAsync(async f => await f.CalculateAsync(this))).SelectMany(f => f).ToArray();
+            Deductions = (await Task.WhenAll(calculateDeductions.Select(async f => await f.CalculateAsync(this).ConfigureAwait(false)))).SelectMany(f => f).ToImmutableArray();
         }
 
-        private async Task CalculateWithholdings(IEnumerable<ICalculateWithholding> calculateWithholdings)
+        private async Task CalculateWithholdingsAsync(IEnumerable<ICalculateWithholdings> calculateWithholdings)
         {
-            Withholdings = (await calculateWithholdings.SelectAsync(async f => await f.CalculateAsync(this))).SelectMany(f => f).ToArray();
-        }
-
-        public async Task CalculatePay(ICalculatePayFactory payFactory)
-        {
-            await Calculate(payFactory, [], [], []);
+            Withholdings = (await Task.WhenAll(calculateWithholdings.Select(async f => await f.CalculateAsync(this).ConfigureAwait(false)))).SelectMany(f => f).ToImmutableArray();
         }
     }
 }

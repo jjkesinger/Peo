@@ -3,7 +3,7 @@ using Peo.Payroll.Domain.Services.Lookup;
 
 namespace Peo.Payroll.Domain.Services.WithholdingCalculators
 {
-    public class SocialSecurityTaxWithholdingCalculator(ITaxLookupService taxLookupService) : ICalculateWithholding
+    public class SocialSecurityTaxWithholdingCalculator(ITaxLookupService taxLookupService) : ICalculateWithholdings
     {
         public async Task<Withholding[]> CalculateAsync(EmployeePayroll payroll)
         {

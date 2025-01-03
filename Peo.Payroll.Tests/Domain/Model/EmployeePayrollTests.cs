@@ -21,7 +21,7 @@ namespace Peo.Payroll.Tests.Domain.Model
             var eclookup = new EmployeeContributionLookupService();
             var tlookup = new TaxLookupService();
 
-            await payroll.Calculate(new PayCalculatorFactory(),
+            await payroll.CalculateAsync(new PayCalculatorFactory(),
                 [
                     new HourlyWageCalculator(), 
                     new SalaryWageCalculator()

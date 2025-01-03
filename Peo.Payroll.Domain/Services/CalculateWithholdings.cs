@@ -2,7 +2,7 @@
 
 namespace Peo.Payroll.Domain.Services
 {
-    public interface ICalculateWithholding
+    public interface ICalculateWithholdings
     {
         Task<Withholding[]> CalculateAsync(EmployeePayroll payroll);
     }

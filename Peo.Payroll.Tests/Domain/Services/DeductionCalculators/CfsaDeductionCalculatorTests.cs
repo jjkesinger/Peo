@@ -3,7 +3,6 @@ using Peo.Payroll.Domain.Model;
 using Peo.Payroll.Domain.Services.DeductionCalculators;
 using Peo.Payroll.Domain.Services.Lookup;
 using Peo.Payroll.Tests.Domain._Builders;
-using Peo.Payroll.Tests.Domain.Mocks;
 
 namespace Peo.Payroll.Tests.Domain.Services.DeductionCalculators;
 
@@ -23,7 +22,7 @@ public class CfsaDeductionCalculatorTests
     public async Task CalculateAsync_GivenEmployeeEnrolled_ShouldCalculateAmount()
     {
         var payroll = new EmployeePayrollBuilder().WithDefaultPayroll().Build();
-        await payroll.CalculatePay(new PayCalculatorFactoryMock());
+        TestUtilities.SetPrivateProperty(payroll, nameof(EmployeePayroll.GrossPay), 4000m);
 
         A.CallTo(() => _employeeElectionLookupService
             .GetActiveElections(payroll, ElectionType.Cfsa))
@@ -47,7 +46,7 @@ public class CfsaDeductionCalculatorTests
     public async Task CalculateAsync_GivenEmployeeNotEnrolled_ShouldCalculateZero()
     {
         var payroll = new EmployeePayrollBuilder().WithDefaultPayroll().Build();
-        await payroll.CalculatePay(new PayCalculatorFactoryMock());
+        TestUtilities.SetPrivateProperty(payroll, nameof(EmployeePayroll.GrossPay), 4000m);
 
         A.CallTo(() => _employeeContributionLookupService
             .GetEmployeeContributionsAsync(payroll, ElectionType.Cfsa))
@@ -67,7 +66,7 @@ public class CfsaDeductionCalculatorTests
     public async Task CalculateAsync_GivenEmployeeEnrolledWith0Rate_ShouldCalculateZero()
     {
         var payroll = new EmployeePayrollBuilder().WithDefaultPayroll().Build();
-        await payroll.CalculatePay(new PayCalculatorFactoryMock());
+        TestUtilities.SetPrivateProperty(payroll, nameof(EmployeePayroll.GrossPay), 4000m);
 
         A.CallTo(() => _employeeElectionLookupService
             .GetActiveElections(payroll, ElectionType.Cfsa))
@@ -91,7 +90,7 @@ public class CfsaDeductionCalculatorTests
     public async Task CalculateAsync_GivenEmployeeEnrolledWithFixedAmount_ShouldCalculateAmount()
     {
         var payroll = new EmployeePayrollBuilder().WithDefaultPayroll().Build();
-        await payroll.CalculatePay(new PayCalculatorFactoryMock());
+        TestUtilities.SetPrivateProperty(payroll, nameof(EmployeePayroll.GrossPay), 4000m);
 
         A.CallTo(() => _employeeElectionLookupService
             .GetActiveElections(payroll, ElectionType.Cfsa))

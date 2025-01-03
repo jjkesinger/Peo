@@ -11,47 +11,18 @@ namespace Peo.Payroll.Domain.Services.PayCalculators
     {
         public ICalculatePay GetPayCalculator(CalculatePayType payType)
         {
-            if (payType == CalculatePayType.Gross)
+            return payType switch
             {
-                return new GrossPayCalculator();
-            }
-
-            if (payType == CalculatePayType.Net)
-            {
-                return new NetPayCalculator();
-            }
-
-            if (payType == CalculatePayType.Taxable)
-            {
-                return new TaxablePayCalculator();
-            }
-
-            if (payType == CalculatePayType.Pto)
-            {
-                return new PtoCalculator();
-            }
-
-            if (payType == CalculatePayType.YtdGross)
-            {
-                return new YtdGrossPayCalculator();
-            }
-
-            if (payType == CalculatePayType.YtdNet)
-            {
-                return new YtdNetPayCalculator();
-            }
-
-            if (payType == CalculatePayType.YtdTaxable)
-            {
-                return new YtdTaxablePayCalculator();
-            }
-
-            if (payType == CalculatePayType.YtdPto)
-            {
-                return new YtdPtoCalculator();
-            }
-
-            throw new NotImplementedException();
+                CalculatePayType.Gross => new GrossPayCalculator(),
+                CalculatePayType.Net => new NetPayCalculator(),
+                CalculatePayType.Taxable => new TaxablePayCalculator(),
+                CalculatePayType.Pto => new PtoCalculator(),
+                CalculatePayType.YtdGross => new YtdGrossPayCalculator(),
+                CalculatePayType.YtdNet => new YtdNetPayCalculator(),
+                CalculatePayType.YtdTaxable => new YtdTaxablePayCalculator(),
+                CalculatePayType.YtdPto => new YtdPtoCalculator(),
+                _ => throw new NotImplementedException()
+            };
         }
     }
 }

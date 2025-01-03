@@ -6,7 +6,7 @@ namespace Peo.Payroll.Domain.Services.DeductionCalculators
     public class EducationPlanDeductionCalculator(
         IEmployeeElectionLookupService employeeElectionLookupService,
         IEmployeeContributionLookupService employeeContributionLookupService) :
-        BaseDeductionCalculator(employeeElectionLookupService, employeeContributionLookupService), ICalculateDeduction
+        BaseDeductionCalculator(employeeElectionLookupService, employeeContributionLookupService), ICalculateDeductions
     {
         public async Task<Deduction[]> CalculateAsync(EmployeePayroll payroll)
         {
