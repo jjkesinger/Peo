@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35431.28
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Time", "Time", "{A269BA34-5613-468E-8567-C0DE2AAFC575}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benefits", "Benefits", "{0E703CD3-5D4A-49F9-9E61-3FD14AE3B3C1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Payroll", "Payroll", "{CEE338BF-F557-4D4A-810D-9A18633F634A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Admin", "Admin", "{37DB1FA5-EC47-481A-B532-F1F2FBF7D525}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peo.Payroll.Domain", "Peo.Payroll.Domain\Peo.Payroll.Domain.csproj", "{FB493D88-F16A-428C-B3DD-A2FE671AF103}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peo.Payroll.Tests", "Peo.Payroll.Tests\Peo.Payroll.Tests.csproj", "{BD935703-CED2-4C20-8727-96675FA9AA90}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB493D88-F16A-428C-B3DD-A2FE671AF103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB493D88-F16A-428C-B3DD-A2FE671AF103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB493D88-F16A-428C-B3DD-A2FE671AF103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB493D88-F16A-428C-B3DD-A2FE671AF103}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD935703-CED2-4C20-8727-96675FA9AA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD935703-CED2-4C20-8727-96675FA9AA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD935703-CED2-4C20-8727-96675FA9AA90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD935703-CED2-4C20-8727-96675FA9AA90}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FB493D88-F16A-428C-B3DD-A2FE671AF103} = {CEE338BF-F557-4D4A-810D-9A18633F634A}
+		{BD935703-CED2-4C20-8727-96675FA9AA90} = {CEE338BF-F557-4D4A-810D-9A18633F634A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {490BFF5B-64BD-430B-A0CA-49DC30F784FB}
+	EndGlobalSection
+EndGlobal
