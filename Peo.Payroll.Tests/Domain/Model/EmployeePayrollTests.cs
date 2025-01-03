@@ -11,7 +11,7 @@ namespace Peo.Payroll.Tests.Domain.Model
     public class EmployeePayrollTests
     {
         [TestMethod, TestCategory("Integration")]
-        public async Task CalculatePayments_Integration()
+        public async Task CalculatePayments_HappyPath()
         {
             var payroll = new EmployeePayrollBuilder()
                 .WithDefaultPayroll()

@@ -8,35 +8,34 @@ namespace Peo.Payroll.Domain.Services.WageCalculators
         {
             var payments = new List<Payment>();
 
-            if (payroll.Timesheet == null || payroll.Timesheet.TimePeriods.Length == 0)
+            if (payroll.Timesheet?.TimePeriods == null || payroll.Timesheet.TimePeriods.Length == 0)
                 return [.. payments];
 
-            var timePeriods = payroll.Timesheet.TimePeriods;
-            foreach (var timePeriod in timePeriods)
+            var earliestStart = payroll.Timesheet.TimePeriods.Min(tp => tp.StartTime);
+            var latestEnd = payroll.Timesheet.TimePeriods.Max(tp => tp.EndTime);
+
+            var payHistory = payroll.Employee.EmployeePayHistory
+                .Where(f => f.EffectiveDate <= latestEnd && (!f.StopDate.HasValue || f.StopDate >= earliestStart))
+                .OrderBy(f => f.EffectiveDate)
+                .ThenBy(f => f.UpdateDate)
+                .ToArray();
+
+            foreach (var timePeriod in payroll.Timesheet.TimePeriods)
             {
-                var pay = payroll.Employee.EmployeePayHistory
-                    .OrderByDescending(f => f.EffectiveDate)
-                    .ThenByDescending(f => f.UpdateDate)
-                    .First(f => f.EffectiveDate <= timePeriod.StartTime);
+                var startTime = timePeriod.StartTime;
+                var endTime = timePeriod.EndTime;
 
-                var newPay = payroll.Employee.EmployeePayHistory
-                    .OrderByDescending(f => f.EffectiveDate)
-                    .ThenByDescending(f => f.UpdateDate)
-                    .First(f => f.EffectiveDate <= timePeriod.EndTime);
-
-                if (pay.WageType == WageType.Hourly)
+                for (int i = 0; i < payHistory.Length; i++)
                 {
-                    if (pay.Equals(newPay))
+                    var currentPay = payHistory[i];
+                    if (currentPay.StopDate == null || currentPay.StopDate >= startTime)
                     {
-                        AddPayment(timePeriod.StartTime, timePeriod.EndTime, pay.Amount, payments);
-                    }
-                    else
-                    {
-                        AddPayment(timePeriod.StartTime, newPay.EffectiveDate, pay.Amount, payments);
-
-                        if (newPay.WageType == WageType.Hourly)
+                        var nextPay = i + 1 < payHistory.Length ? payHistory[i + 1] : null;
+                        var currentEndTime = nextPay != null && nextPay.EffectiveDate <= endTime ? nextPay.EffectiveDate : endTime;
+                        if (currentPay.WageType == WageType.Hourly)
                         {
-                            AddPayment(newPay.EffectiveDate, timePeriod.EndTime, pay.Amount, payments);
+                            AddPayment(startTime, currentEndTime, currentPay.Amount, payments);
+                            startTime = currentEndTime;
                         }
                     }
                 }
@@ -47,8 +46,9 @@ namespace Peo.Payroll.Domain.Services.WageCalculators
 
         private static void AddPayment(DateTime startDate, DateTime endDate, decimal amount, List<Payment> payments)
         {
-            var total = new decimal((endDate - startDate).TotalHours) * amount;
+            var total = (decimal)(endDate - startDate).TotalHours * amount;
             payments.Add(new Payment(Math.Round(total, 2, MidpointRounding.AwayFromZero)));
         }
     }
+
 }
