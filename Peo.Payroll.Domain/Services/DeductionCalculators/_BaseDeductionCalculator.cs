@@ -14,21 +14,17 @@ namespace Peo.Payroll.Domain.Services.DeductionCalculators
                     (await employeeContributionLookupService.GetEmployeeContributionsAsync(payroll, election.ElectionType))
                         .Select(contribution =>
                         {
-                            if (contribution.Rate.HasValue && !contribution.Amount.HasValue)
+                            if (!contribution.Rate.HasValue && !contribution.Amount.HasValue)
                             {
-                                var amount = contribution.DeductionTaxType == DeductionTaxType.PreTax ?
-                                    payroll.GrossPay * contribution.Rate.Value :
-                                    payroll.NetPay * contribution.Rate.Value;
-
-                                return new Deduction(contribution.Description, contribution.DeductionTaxType, amount, contribution.Rate);
+                                throw new InvalidDataException($"Missing rate and amount for {contribution.Description} contribution.");
                             }
 
-                            if (contribution.Amount.HasValue)
-                            {
-                                return new Deduction(contribution.Description, contribution.DeductionTaxType, contribution.Amount.Value, contribution.Rate);
-                            }
+                            var amount = contribution.Amount ??
+                                (contribution.DeductionTaxType == DeductionTaxType.PreTax ?
+                                payroll.GrossPay * contribution.Rate!.Value :
+                                payroll.NetPay * contribution.Rate!.Value);
 
-                            throw new InvalidDataException($"Missing rate and amount for {election.Description} contribution.");
+                            return new Deduction(contribution.Description, contribution.DeductionTaxType, amount, contribution.Rate);
                         }).ToArray()
                 )).SelectMany(a => a).ToArray();
         }

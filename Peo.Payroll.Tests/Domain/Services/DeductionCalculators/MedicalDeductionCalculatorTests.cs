@@ -1,10 +1,8 @@
-
 using FakeItEasy;
 using Peo.Payroll.Domain.Model;
 using Peo.Payroll.Domain.Services.DeductionCalculators;
 using Peo.Payroll.Domain.Services.Lookup;
 using Peo.Payroll.Tests.Domain._Builders;
-using Peo.Payroll.Tests.Domain.Mocks;
 
 namespace Peo.Payroll.Tests.Domain.Services.DeductionCalculators;
 
