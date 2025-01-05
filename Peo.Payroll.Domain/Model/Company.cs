@@ -1,6 +1,6 @@
 ﻿namespace Peo.Payroll.Domain.Model
 {
-    public record Company(Contract[] Contracts)
+    public record Company(string Name)
     {
     }
 }

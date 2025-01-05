@@ -28,38 +28,5 @@ namespace Peo.Payroll.Domain.Services.DeductionCalculators
                         }).ToArray()
                 )).SelectMany(a => a).ToArray();
         }
-
-        protected static decimal CalculatePayrollAmount(EmployeePayroll payroll, ElectionType electionType)
-        {
-            decimal total = 0;
-
-            foreach (var contract in payroll.Company.Contracts)
-            {
-                foreach (var period in payroll.Employee.EmployeeHireHistory)
-                {
-                    var effectiveStartDate = Max(period.StartDate, contract.ContractDateRange.StartDate, payroll.Period.PayRange.StartDate);
-                    var effectiveEndDate = Min(period.TerminationDate ?? contract.ContractDateRange.EndDate, contract.ContractDateRange.EndDate, payroll.Period.PayRange.EndDate);
-
-                    if (effectiveStartDate <= effectiveEndDate)
-                    {
-                        var effectiveDays = (effectiveEndDate - effectiveStartDate).Days + 1;
-
-                        total += contract.GetDailyRate(electionType) * effectiveDays;
-                    }
-                }
-            }
-
-            return Math.Round(total, 2, MidpointRounding.AwayFromZero);
-        }
-
-        private static DateTime Max(DateTime date1, DateTime date2, DateTime date3)
-        {
-            return new DateTime(Math.Max(date1.Ticks, Math.Max(date2.Ticks, date3.Ticks)), DateTimeKind.Utc);
-        }
-
-        private static DateTime Min(DateTime date1, DateTime date2, DateTime date3)
-        {
-            return new DateTime(Math.Min(date1.Ticks, Math.Min(date2.Ticks, date3.Ticks)), DateTimeKind.Utc);
-        }
     }
 }

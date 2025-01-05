@@ -4,23 +4,26 @@ namespace Peo.Payroll.Tests.Domain._Builders
 {
     internal class CompanyBuilder
     {
-        private Contract[] _contracts = [];
+        private string? _companyName;
 
-        internal CompanyBuilder WithContracts(Contract[] contracts)
+        internal CompanyBuilder WithCompanyName(string companyName)
         {
-            _contracts = contracts;
+            _companyName = companyName;
             return this;
         }
 
         internal CompanyBuilder WithDefault()
         {
-            WithContracts([new ContractBuilder().WithDefault().Build()]);
+            WithCompanyName("Test Company");
             return this;
         }
 
         internal Company Build()
         {
-            return new Company(_contracts);
+            if (_companyName == null)
+                throw new InvalidOperationException();
+
+            return new Company(_companyName);
         }
     }
 }

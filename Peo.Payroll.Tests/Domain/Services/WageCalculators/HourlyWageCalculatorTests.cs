@@ -13,7 +13,7 @@ public class HourlyWageCalculatorTests
     public async Task CalculateAsync_GivenHourlyEmployee_ShouldCalculatesTotalWages()
     {
         var payroll = new EmployeePayrollBuilder()
-            .WithCompany(new CompanyBuilder().Build())
+            .WithCompany(new CompanyBuilder().WithDefault().Build())
             .WithEmployee(new EmployeeBuilder()
                 .WithEmployeePayHistory([
                     new EmployeePayBuilder()
@@ -100,7 +100,7 @@ public class HourlyWageCalculatorTests
     public async Task CalculateAsync_GivenHourlyEmployeeWithChangeInPayHistory_ShouldCalculatesTotalWages()
     {
         var payroll = new EmployeePayrollBuilder()
-            .WithCompany(new CompanyBuilder().Build())
+            .WithCompany(new CompanyBuilder().WithDefault().Build())
             .WithEmployee(new EmployeeBuilder()
                 .WithEmployeePayHistory([
                     new EmployeePayBuilder()
@@ -194,7 +194,7 @@ public class HourlyWageCalculatorTests
     public async Task CalculateAsync_GivenHourlyEmployeeWithChangeInPayHistoryDuringTimePeriod_ShouldCalculatesTotalWages()
     {
         var payroll = new EmployeePayrollBuilder()
-            .WithCompany(new CompanyBuilder().Build())
+            .WithCompany(new CompanyBuilder().WithDefault().Build())
             .WithEmployee(new EmployeeBuilder()
                 .WithEmployeePayHistory([
                     new EmployeePayBuilder()
