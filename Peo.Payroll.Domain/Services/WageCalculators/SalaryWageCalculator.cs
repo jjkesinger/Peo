@@ -8,21 +8,31 @@ namespace Peo.Payroll.Domain.Services.WageCalculators
         {
             var payments = new List<Payment>();
 
-            var originalStart = payroll.Period.PayRange.StartDate;
-            var originalEnd = payroll.Period.PayRange.EndDate;
+            var startTime = payroll.Period.PayRange.StartDate;
+            var endTime = payroll.Period.PayRange.EndDate;
 
-            foreach (var pay in payroll.Employee.EmployeePayHistory)
+            var payHistory = payroll.Employee.EmployeePayHistory
+                .Where(f => f.EffectiveDate <= endTime && (!f.StopDate.HasValue || f.StopDate >= startTime))
+                .OrderBy(f => f.EffectiveDate)
+                .ThenBy(f => f.UpdateDate)
+                .ToArray();
+
+            for (int i = 0; i < payHistory.Length; i++)
             {
-                if (pay.WageType == WageType.Salary)
+                var currentPay = payHistory[i];
+                if (currentPay.StopDate == null || currentPay.StopDate >= startTime)
                 {
-                    var start = originalStart < pay.EffectiveDate ? pay.EffectiveDate : originalStart;
-                    var end = (pay.StopDate.HasValue && originalEnd > pay.StopDate) ? pay.StopDate.Value : originalEnd;
+                    var nextPay = i + 1 < payHistory.Length ? payHistory[i + 1] : null;
+                    var currentEndTime = nextPay != null && nextPay.EffectiveDate <= endTime ? nextPay.EffectiveDate : endTime;
+                    if (currentPay.WageType == WageType.Salary)
+                    {
+                        var fraction = new decimal((currentEndTime - startTime).TotalDays / (endTime - startTime).TotalDays);
+                        var frequency = payroll.Period.PayRange.GetAnnualFrequency();
+                        var total = (currentPay.Amount / frequency) * fraction;
 
-                    var fraction = new decimal((end - start).TotalDays / (originalEnd - originalStart).TotalDays);
-                    var frequency = payroll.Period.PayRange.GetAnnualFrequency();
-                    var total = (pay.Amount / frequency) * fraction;
-
-                    payments.Add(new Payment(Math.Round(total, 2, MidpointRounding.AwayFromZero)));
+                        payments.Add(new Payment(Math.Round(total, 2, MidpointRounding.AwayFromZero)));
+                        startTime = currentEndTime;
+                    }
                 }
             }
 
